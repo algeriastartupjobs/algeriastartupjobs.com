@@ -5,7 +5,7 @@
   "version": "0.0.0",
   "main": ".webpack/main",
   "scripts": {
-    "start": "electron-forge start",
+    "dev": "electron-forge start",
     "package": "electron-forge package",
     "make:linux": "electron-forge make --arch=x64 --platform=linux",
     "publish": "electron-forge publish",

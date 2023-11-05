@@ -142,8 +142,17 @@
       "problemMatcher": [],
       "options": { "cwd": "${workspaceFolder}/api" },
       "isBackground": true,
-      "presentation": { "group": "dev" },
+      "presentation": { "group": "dev-api" },
       "dependsOn": ["dev db"]
+    },
+    {
+      "label": "dev scraper",
+      "type": "shell",
+      "command": "npm install && npm run dev",
+      "problemMatcher": [],
+      "options": { "cwd": "${workspaceFolder}/web_scraper" },
+      "isBackground": true,
+      "presentation": { "group": "dev-api" }
     },
     {
       "label": "dev web",
@@ -152,11 +161,11 @@
       "problemMatcher": [],
       "options": { "cwd": "${workspaceFolder}/web" },
       "isBackground": true,
-      "presentation": { "group": "dev" }
+      "presentation": { "group": "dev-web" }
     },
     {
       "label": "dev",
-      "dependsOn": ["dev web", "dev api"],
+      "dependsOn": ["dev web", "dev api", "dev scraper"],
       "dependsOrder": "parallel",
       "problemMatcher": [],
       "group": "build"
