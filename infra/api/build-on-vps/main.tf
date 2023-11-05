@@ -75,7 +75,7 @@ resource "ssh_resource" "setup" {
 
   commands = [
     "sudo apt-get update -y && sudo apt-get install -y build-essential unzip pkg-config libssl-dev python3",
-    "curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y --profile minimal --default-toolchain nightly",
+    "curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y --profile minimal",
     "sudo snap install node --classic",
     "exec bash -l",
   ]
