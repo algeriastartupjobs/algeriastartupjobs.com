@@ -29,7 +29,7 @@ server.get("/scrape", async (req, res) => {
   await win.webContents.session.clearStorageData();
   await win.webContents.session.clearCache();
 
-  console.log("Loading scraping window...");
+  console.log(`Loading ${normalizedURL}`);
   win.loadURL(normalizedURL);
   win.webContents.on("did-finish-load", () => {
     win.webContents

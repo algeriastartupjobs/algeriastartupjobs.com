@@ -29,6 +29,21 @@ const normalizers: Record<Source, Normalizer> = {
       return url;
     },
   },
+  facebook: {
+    normalize: (sourceURL: string) => {
+      let postSlug = "";
+
+      // /**/permalink/[permalink]
+      if (!postSlug) {
+        const match = sourceURL.match(/\/permalink\/(\d+)/);
+        if (match) {
+          postSlug = match[1];
+        }
+      }
+
+      return `https://www.facebook.com/${postSlug}`;
+    },
+  },
 };
 
 export const normalizeSourceURL = (source: Source, sourceURL: string) =>

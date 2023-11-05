@@ -14,6 +14,14 @@ export const matchers: Matcher[] = [
       return [url.hostname.endsWith("linkedin.com")].some(Boolean);
     },
   },
+  {
+    source: "facebook",
+    match: (sourceURL: string) => {
+      const url = new URL(sourceURL);
+
+      return [url.hostname.endsWith("facebook.com"), url.hostname.endsWith("fb.com")].some(Boolean);
+    },
+  },
 ];
 
 export const matchSourceURL = (sourceURL: string) =>

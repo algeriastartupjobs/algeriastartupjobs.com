@@ -13,8 +13,18 @@ import { STAY_AT_COMPLETED_STATUS_FOR_MS } from "./const";
 import { initialStateForCreatePostPage } from "../create-post/state";
 
 type ImportStatusResponse =
-  | { status: Exclude<ImportStatus, "Completed">; title?: never; description?: never }
-  | { status: Extract<ImportStatus, "Completed">; title: string; description: string };
+  | {
+      status: Exclude<ImportStatus, "Completed">;
+      title?: never;
+      description?: never;
+      poster?: never;
+    }
+  | {
+      status: Extract<ImportStatus, "Completed">;
+      title: string;
+      description: string;
+      poster: string;
+    };
 
 const _fetchImportStatusForURL = async (url: string): Promise<void> => {
   const { importStatusPage, importPage, createPostPage } = getStateActions();
@@ -37,12 +47,13 @@ const _fetchImportStatusForURL = async (url: string): Promise<void> => {
         close();
 
         await sleep(STAY_AT_COMPLETED_STATUS_FOR_MS);
-        const { title, description } = response;
+        const { title, description, poster } = response;
         createPostPage.overwrite({
           ...initialStateForCreatePostPage,
           title,
           compact: false,
           post_description: description,
+          poster_name: poster,
         });
 
         setTimeout(() => {

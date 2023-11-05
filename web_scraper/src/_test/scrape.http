@@ -4,3 +4,7 @@ GET {{base_url}}/scrape?url=https://www.linkedin.com/jobs/view/3755143465
 
 ###
 GET {{base_url}}/scrape?url=https://www.linkedin.com/jobs/view/3710666700
+
+
+###
+GET {{base_url}}/scrape?url=https://www.facebook.com/groups/dzdevs/permalink/7007085862720474/?mibextid=uJjRxr
