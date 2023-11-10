@@ -17,8 +17,6 @@ pub struct ImportedContentCronJob {
 }
 
 async fn run_importing_content_cron_job(app_state: AppState) {
-  tracing::info!("🚀 Importing");
-
   let imported_contents = app_state
     .imported_content_repository
     .get_many_pending_imported_content("created_at", DBOrderDirection::DESC, 10, 0)
@@ -32,7 +30,6 @@ async fn run_importing_content_cron_job(app_state: AppState) {
   let imported_contents = imported_contents.unwrap();
 
   if imported_contents.is_empty() {
-    tracing::info!("No importing_contents found");
     return;
   }
 
@@ -95,7 +92,7 @@ async fn run_importing_content_cron_job(app_state: AppState) {
     }
   }
 
-  tracing::info!("✅ Importing done");
+  tracing::info!("Importing done");
 }
 
 impl ImportedContentCronJob {

@@ -17,8 +17,6 @@ pub struct SearchCronJob {
 }
 
 async fn run_indexing_cron_job(app_state: AppState) {
-  tracing::info!("🚀 Indexing");
-
   let tasks = app_state
     .task_repository
     .get_many_pending_indexing_tasks("Indexing", "created_at", DBOrderDirection::DESC, 10, 0)
@@ -31,7 +29,6 @@ async fn run_indexing_cron_job(app_state: AppState) {
   let tasks = tasks.unwrap();
 
   if tasks.is_empty() {
-    tracing::info!("⏭️  No indexing tasks found, skipping");
     return;
   }
 
@@ -41,16 +38,14 @@ async fn run_indexing_cron_job(app_state: AppState) {
   let mut post_ids = vec![];
   for task in tasks {
     task_ids.push(task.id);
-    match task.name {
-      TaskName::Indexing {
-        model_name,
-        model_id,
-      } => {
-        if model_name == "post" {
-          post_ids.push(model_id);
-        }
+    if let TaskName::Indexing {
+      model_name,
+      model_id,
+    } = task.name
+    {
+      if model_name == "post" {
+        post_ids.push(model_id);
       }
-      _ => {}
     }
   }
 
@@ -146,12 +141,10 @@ async fn run_indexing_cron_job(app_state: AppState) {
     }
   }
 
-  tracing::info!("✅ Indexing done");
+  tracing::info!("Indexing done");
 }
 
 async fn run_bk_tree_refresher_cron_job(app_state: AppState, has_job_ran_once: bool) {
-  tracing::info!("🚀 Refreshing bk-tree");
-
   let tasks = app_state
     .task_repository
     .get_many_pending_indexing_tasks(
@@ -202,7 +195,7 @@ async fn run_bk_tree_refresher_cron_job(app_state: AppState, has_job_ran_once: b
     return;
   }
 
-  tracing::info!("✅ Refreshing bk-tree done");
+  tracing::info!("Refreshing bk-tree done");
 }
 
 impl SearchCronJob {
@@ -221,7 +214,7 @@ impl SearchCronJob {
           run_indexing_cron_job(app_state.clone()).await;
           is_job_running.store(false, Ordering::Relaxed);
         } else {
-          tracing::info!("⏳ Still indexing... ");
+          tracing::info!("Still indexing... ");
         }
       })
     });
@@ -257,7 +250,7 @@ impl SearchCronJob {
           has_job_ran_once.store(true, Ordering::Relaxed);
           is_job_running.store(false, Ordering::Relaxed);
         } else {
-          tracing::info!("⏳ Still refreshing bk-tree ... ");
+          tracing::info!("Still refreshing bk-tree ... ");
         }
       })
     });
