@@ -96,7 +96,7 @@ impl AccountRepository {
       WHERE id = $1
       "#,
     )
-    .bind(&id)
+    .bind(id)
     .fetch_one(&mut *conn)
     .await;
 
@@ -143,7 +143,7 @@ impl AccountRepository {
       WHERE email = $1
       "#,
     )
-    .bind(&email)
+    .bind(email)
     .fetch_one(&mut *conn)
     .await;
 
@@ -203,9 +203,9 @@ impl AccountRepository {
     .bind(&account.email)
     .bind(&account.slug)
     .bind(&account.r#type.to_string())
-    .bind(&first_name)
-    .bind(&last_name)
-    .bind(&company_name)
+    .bind(first_name)
+    .bind(last_name)
+    .bind(company_name)
     .execute(&mut *conn)
     .await;
     if db_result.is_err() {

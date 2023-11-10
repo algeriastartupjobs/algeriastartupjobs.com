@@ -19,7 +19,7 @@ pub async fn search_posts(
     .search_service
     .search_posts(&url_query.query)
     .await;
-  if !post_ids.is_ok() {
+  if post_ids.is_err() {
     return StatusCode::INTERNAL_SERVER_ERROR.into_response();
   }
   let post_ids = post_ids.unwrap();
@@ -28,7 +28,7 @@ pub async fn search_posts(
     .post_repository
     .get_many_posts_by_ids(post_ids.clone())
     .await;
-  if !compact_posts.is_ok() {
+  if compact_posts.is_err() {
     return StatusCode::INTERNAL_SERVER_ERROR.into_response();
   }
   let mut compact_posts = compact_posts.unwrap();
@@ -50,7 +50,7 @@ pub async fn search_posts(
     .tag_repository
     .get_many_compact_tags_by_ids(&unique_tag_ids)
     .await;
-  if !compact_tags.is_ok() {
+  if compact_tags.is_err() {
     // @TODO-ZM: log error reason
     return StatusCode::INTERNAL_SERVER_ERROR.into_response();
   }
@@ -60,7 +60,7 @@ pub async fn search_posts(
     .account_repository
     .get_many_compact_accounts_by_ids(unique_poster_ids.clone())
     .await;
-  if !compact_posters.is_ok() {
+  if compact_posters.is_err() {
     // @TODO-ZM: log error reason
     return StatusCode::INTERNAL_SERVER_ERROR.into_response();
   }

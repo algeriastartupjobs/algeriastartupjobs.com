@@ -120,8 +120,7 @@ impl SearchService {
       for tag_id in post.tag_ids {
         let tag = tags
           .iter()
-          .find(|tag| tag.id == tag_id)
-          .map(|tag| tag.clone());
+          .find(|tag| tag.id == tag_id).cloned();
 
         if tag.is_none() {
           tracing::error!("Failed to find the tag by id {}", tag_id,);
@@ -283,7 +282,7 @@ impl SearchService {
           search_queries_count - index,
           // @TODO-ZM: Potential SQL injection vulnerability!
           search_query
-            .split(" ")
+            .split(' ')
             .map(|word| format!("'{}'", word))
             .join(", "),
         )

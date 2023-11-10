@@ -55,9 +55,9 @@ impl EmailService {
           "subject": "{}",
           "htmlbody": "{}"
         }}"#,
-        escape_new_line(&escape_double_quote(&email)),
-        escape_new_line(&escape_double_quote(&subject)),
-        escape_new_line_with_br(&escape_double_quote(&body))
+        escape_new_line(&escape_double_quote(email)),
+        escape_new_line(&escape_double_quote(subject)),
+        escape_new_line_with_br(&escape_double_quote(body))
       ))
       .send()
       .await;

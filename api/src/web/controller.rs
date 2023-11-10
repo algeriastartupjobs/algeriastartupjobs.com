@@ -87,7 +87,7 @@ pub async fn jobs(
   Path(job_slug): Path<String>,
   State(app_state): State<AppState>,
 ) -> impl IntoResponse {
-  let post_id = job_slug.split("_").last();
+  let post_id = job_slug.split('_').last();
   if post_id.is_none() {
     return return404(&app_state).into_response();
   }
@@ -221,7 +221,7 @@ pub async fn sitemap(State(app_state): State<AppState>) -> impl IntoResponse {
     url_string.push((
       get_post_url(
         &post,
-        &posters
+        posters
           .iter()
           .find(|poster| poster.id == post.poster_id)
           .unwrap(),

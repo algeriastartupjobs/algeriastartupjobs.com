@@ -29,9 +29,9 @@ pub fn enable_tracing() -> sentry::ClientInitGuard {
       release: sentry::release_name!(),
       environment: Some(config.stage.as_str().into()),
       traces_sample_rate: match config.stage {
-        crate::config::service::Stage::Development => 1.0.into(),
+        crate::config::service::Stage::Development => 1.0,
         // @TODO-ZM: reduce once we have actual users
-        _ => 1.0.into(),
+        _ => 1.0,
       },
       ..Default::default()
     },

@@ -120,7 +120,7 @@ https://www.algeriastartupjobs.com
   )
   .await;
 
-  if !email_result.is_ok() {
+  if email_result.is_err() {
     // @TODO-ZM: log error reason
     return StatusCode::INTERNAL_SERVER_ERROR.into_response();
   }

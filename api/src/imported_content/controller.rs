@@ -34,7 +34,7 @@ pub async fn imported_content_status(
 
       if import_status.is_err() {
         // @TODO-ZM: log error reason
-        yield Event::default().data(format!(r#"{{"status": "{}"}}"#, ImportedContentStatus::Failed{failure_reason:"".to_string()}.to_string()));
+        yield Event::default().data(format!(r#"{{"status": "{}"}}"#, ImportedContentStatus::Failed{failure_reason:"".to_string()}));
         break;
       }
       let (is_final_status, status, json_data) = import_status.unwrap();

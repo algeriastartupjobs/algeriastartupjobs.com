@@ -24,7 +24,7 @@ impl SecurityService {
       let duration_ms = constraint.duration_ms;
       let max_requests = constraint.max_requests;
       let is_allowed = self.rate_limit_kv_db.transaction::<_, _, bool>(|tx| {
-        let value = tx.get(&id);
+        let value = tx.get(id);
         if value.is_err() {
           // @TODO-ZM: log error
           return Ok(false);
@@ -45,7 +45,7 @@ impl SecurityService {
         let value = value.unwrap();
         let value_str = String::from_utf8_lossy(&value);
         // value is "[ISO 8601 time string]|[count]"
-        let (last_time_str, count_str) = value_str.split_once("|").unwrap();
+        let (last_time_str, count_str) = value_str.split_once('|').unwrap();
         let last_time = chrono::DateTime::parse_from_rfc3339(last_time_str);
 
         if last_time.is_err() {
@@ -62,9 +62,9 @@ impl SecurityService {
           );
           if inserted.is_err() {
             // @TODO-ZM: log error
-            return Ok(false);
+            Ok(false)
           } else {
-            return Ok(true);
+            Ok(true)
           }
         } else {
           let count = count_str.parse::<u32>();
@@ -74,7 +74,7 @@ impl SecurityService {
           }
           let count = count.unwrap();
           if count >= max_requests {
-            return Ok(false);
+            Ok(false)
           } else {
             let inserted = tx.insert(
               id.as_bytes().to_vec(),
@@ -82,9 +82,9 @@ impl SecurityService {
             );
             if inserted.is_err() {
               // @TODO-ZM: log error
-              return Ok(false);
+              Ok(false)
             } else {
-              return Ok(true);
+              Ok(true)
             }
           }
         }

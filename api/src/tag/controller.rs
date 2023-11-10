@@ -51,7 +51,7 @@ pub async fn get_many_suggested_tags_for_post(
     .get_many_compact_tags_by_names(keywords.clone())
     .await;
 
-  if !existing_tags.is_ok() {
+  if existing_tags.is_err() {
     // @TODO-ZM: log error reason
     return StatusCode::INTERNAL_SERVER_ERROR.into_response();
   }
@@ -60,10 +60,8 @@ pub async fn get_many_suggested_tags_for_post(
   let new_keywords = keywords
     .iter()
     .filter(|keyword| {
-      existing_tags
-        .iter()
-        .find(|tag| tag.name == **keyword)
-        .is_none()
+      !existing_tags
+        .iter().any(|tag| tag.name == **keyword)
     })
     .collect::<Vec<&String>>();
 
@@ -71,7 +69,7 @@ pub async fn get_many_suggested_tags_for_post(
     .iter()
     .map(|keyword| DBTag {
       name: keyword.to_string(),
-      slug: slugify(&keyword),
+      slug: slugify(keyword),
     })
     .collect::<Vec<DBTag>>();
 
@@ -93,7 +91,7 @@ pub async fn get_many_suggested_tags_for_post(
     .iter()
     .zip(new_tag_ids.iter())
     .map(|(db_tag, tag_id)| CompactTag {
-      id: tag_id.clone(),
+      id: *tag_id,
       name: db_tag.name.clone(),
       slug: db_tag.slug.clone(),
     })
@@ -101,8 +99,7 @@ pub async fn get_many_suggested_tags_for_post(
 
   let all_compact_tags = existing_tags
     .iter()
-    .chain(new_compact_tags.iter())
-    .map(|tag| tag.clone())
+    .chain(new_compact_tags.iter()).cloned()
     .collect::<Vec<_>>();
 
   Json(json!({

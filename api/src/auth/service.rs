@@ -56,10 +56,7 @@ impl FromRequestParts<AppState> for ScopedToken {
 
 impl IntoResponse for AuthError {
   fn into_response(self) -> Response {
-    let status = match self {
-      // @TODO-ZM: log error reason
-      _ => StatusCode::UNAUTHORIZED,
-    };
+    let status = StatusCode::UNAUTHORIZED;
     status.into_response()
   }
 }
@@ -96,7 +93,7 @@ impl AuthService {
     let code = &random_16[12..];
 
     let kv_db_result = self.main_kv_db.insert(key, random_16.as_bytes());
-    if !kv_db_result.is_ok() {
+    if kv_db_result.is_err() {
       // @TODO-ZM: log error reason
       return Err(AuthError::InternalError);
     }
@@ -117,7 +114,7 @@ impl AuthService {
       None as Option<&[u8]>,
     );
 
-    if !kv_db_result.is_ok() || kv_db_result.unwrap().is_err() {
+    if kv_db_result.is_err() || kv_db_result.unwrap().is_err() {
       // @TODO-ZM: log error reason
       return Err(AuthError::InternalError);
     }

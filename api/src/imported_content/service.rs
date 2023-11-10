@@ -35,7 +35,7 @@ impl ImportedContentService {
     loop {
       let imported_content_id_and_status_and_json_data = match self
         .imported_content_repository
-        .get_one_imported_content_by_source_url(&url.to_string())
+        .get_one_imported_content_by_source_url(url.as_ref())
         .await
       {
         Ok(imported_content) => Ok((imported_content.status, imported_content.json_data)),

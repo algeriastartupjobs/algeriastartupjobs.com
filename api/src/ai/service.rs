@@ -45,7 +45,7 @@ impl AIService {
   ) -> Result<Vec<String>, AIError> {
     let client = reqwest::Client::new();
 
-    if post.title.len() < 3 || post.description.split(" ").count() < 2 {
+    if post.title.len() < 3 || post.description.split(' ').count() < 2 {
       return Ok(vec![]);
     }
 

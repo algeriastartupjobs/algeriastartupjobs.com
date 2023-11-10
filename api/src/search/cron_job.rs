@@ -47,7 +47,7 @@ async fn run_indexing_cron_job(app_state: AppState) {
         model_id,
       } => {
         if model_name == "post" {
-          post_ids.push(model_id.clone());
+          post_ids.push(model_id);
         }
       }
       _ => {}
@@ -68,8 +68,7 @@ async fn run_indexing_cron_job(app_state: AppState) {
 
   let tag_ids = posts
     .iter()
-    .map(|post| post.tag_ids.clone())
-    .flatten()
+    .flat_map(|post| post.tag_ids.clone())
     .collect::<Vec<u32>>();
 
   let tags = app_state
@@ -215,16 +214,16 @@ impl SearchCronJob {
       let app_state = app_state.clone();
       let is_job_running = is_job_running.clone();
 
-      return Box::pin(async move {
+      Box::pin(async move {
         let compare_and_swap_result =
           is_job_running.compare_exchange(false, true, Ordering::Relaxed, Ordering::Relaxed);
-        if compare_and_swap_result.is_ok() && compare_and_swap_result.unwrap() == false {
+        if compare_and_swap_result.is_ok() && !compare_and_swap_result.unwrap() {
           run_indexing_cron_job(app_state.clone()).await;
           is_job_running.store(false, Ordering::Relaxed);
         } else {
           tracing::info!("⏳ Still indexing... ");
         }
-      });
+      })
     });
 
     if job.is_err() {
@@ -246,10 +245,10 @@ impl SearchCronJob {
       let is_job_running = is_job_running.clone();
       let has_job_ran_once = has_job_ran_once.clone();
 
-      return Box::pin(async move {
+      Box::pin(async move {
         let compare_and_swap_result =
           is_job_running.compare_exchange(false, true, Ordering::Relaxed, Ordering::Relaxed);
-        if compare_and_swap_result.is_ok() && compare_and_swap_result.unwrap() == false {
+        if compare_and_swap_result.is_ok() && !compare_and_swap_result.unwrap() {
           run_bk_tree_refresher_cron_job(
             app_state.clone(),
             has_job_ran_once.load(Ordering::Relaxed),
@@ -260,7 +259,7 @@ impl SearchCronJob {
         } else {
           tracing::info!("⏳ Still refreshing bk-tree ... ");
         }
-      });
+      })
     });
 
     if job.is_err() {

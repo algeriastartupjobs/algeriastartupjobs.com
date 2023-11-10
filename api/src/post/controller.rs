@@ -29,7 +29,7 @@ pub async fn get_all_posts_for_feed(State(app_state): State<AppState>) -> impl I
     .post_repository
     .get_many_published_compact_posts("published_at", DBOrderDirection::DESC, 20, 0)
     .await;
-  if !compact_posts.is_ok() {
+  if compact_posts.is_err() {
     return StatusCode::INTERNAL_SERVER_ERROR.into_response();
   }
   let compact_posts = compact_posts.unwrap();
@@ -49,7 +49,7 @@ pub async fn get_all_posts_for_feed(State(app_state): State<AppState>) -> impl I
     .tag_repository
     .get_many_compact_tags_by_ids(&unique_tag_ids)
     .await;
-  if !compact_tags.is_ok() {
+  if compact_tags.is_err() {
     // @TODO-ZM: log error reason
     return StatusCode::INTERNAL_SERVER_ERROR.into_response();
   }
@@ -59,7 +59,7 @@ pub async fn get_all_posts_for_feed(State(app_state): State<AppState>) -> impl I
     .account_repository
     .get_many_compact_accounts_by_ids(unique_poster_ids.clone())
     .await;
-  if !compact_posters.is_ok() {
+  if compact_posters.is_err() {
     // @TODO-ZM: log error reason
     return StatusCode::INTERNAL_SERVER_ERROR.into_response();
   }
@@ -79,7 +79,7 @@ pub async fn get_one_post_by_id(
 ) -> impl IntoResponse {
   let post = app_state.post_repository.get_one_post_by_id(id).await;
 
-  if !post.is_ok() {
+  if post.is_err() {
     match post {
       Err(DataAccessError::NotFound) => {
         return StatusCode::NOT_FOUND.into_response();
@@ -96,7 +96,7 @@ pub async fn get_one_post_by_id(
     .tag_repository
     .get_many_compact_tags_by_ids(&post.tag_ids)
     .await;
-  if !compact_tags.is_ok() {
+  if compact_tags.is_err() {
     // @TODO-ZM: log error reason
     return StatusCode::INTERNAL_SERVER_ERROR.into_response();
   }
@@ -106,7 +106,7 @@ pub async fn get_one_post_by_id(
     .account_repository
     .get_one_account_by_id(post.poster_id)
     .await;
-  if !poster.is_ok() {
+  if poster.is_err() {
     // @TODO-ZM: log error reason
     return StatusCode::INTERNAL_SERVER_ERROR.into_response();
   }
@@ -165,7 +165,7 @@ pub async fn get_many_similar_posts_by_id(
     ))
     .await;
 
-  if !post_ids.is_ok() {
+  if post_ids.is_err() {
     // @TODO-ZM: log error reason
     return StatusCode::INTERNAL_SERVER_ERROR.into_response();
   }
@@ -180,7 +180,7 @@ pub async fn get_many_similar_posts_by_id(
     .get_many_compact_posts_by_ids(post_ids.clone())
     .await;
 
-  if !similar_compact_posts.is_ok() {
+  if similar_compact_posts.is_err() {
     match similar_compact_posts {
       Err(DataAccessError::NotFound) => {
         return StatusCode::NOT_FOUND.into_response();
@@ -208,7 +208,7 @@ pub async fn get_many_similar_posts_by_id(
     .tag_repository
     .get_many_compact_tags_by_ids(&unique_tag_ids)
     .await;
-  if !compact_tags.is_ok() {
+  if compact_tags.is_err() {
     // @TODO-ZM: log error reason
     return StatusCode::INTERNAL_SERVER_ERROR.into_response();
   }
@@ -218,7 +218,7 @@ pub async fn get_many_similar_posts_by_id(
     .account_repository
     .get_many_compact_accounts_by_ids(unique_poster_ids.clone())
     .await;
-  if !compact_posters.is_ok() {
+  if compact_posters.is_err() {
     // @TODO-ZM: log error reason
     return StatusCode::INTERNAL_SERVER_ERROR.into_response();
   }
@@ -235,7 +235,7 @@ pub async fn get_many_similar_posts_by_id(
 pub async fn get_post_count(State(app_state): State<AppState>) -> impl IntoResponse {
   let post_count = app_state.post_repository.get_published_post_count().await;
 
-  if !post_count.is_ok() {
+  if post_count.is_err() {
     // @TODO-ZM: log error reason
     return StatusCode::INTERNAL_SERVER_ERROR.into_response();
   }
@@ -263,7 +263,7 @@ pub async fn get_many_compact_posts_for_tag(
 
   let post_ids = app_state.search_service.search_posts(&tag.name).await;
 
-  if !post_ids.is_ok() {
+  if post_ids.is_err() {
     // @TODO-ZM: log error reason
     return StatusCode::INTERNAL_SERVER_ERROR.into_response();
   }
@@ -274,7 +274,7 @@ pub async fn get_many_compact_posts_for_tag(
     .get_many_compact_posts_by_ids(post_ids)
     .await;
 
-  if !compact_posts.is_ok() {
+  if compact_posts.is_err() {
     // @TODO-ZM: log error reason
     return StatusCode::INTERNAL_SERVER_ERROR.into_response();
   }
@@ -295,7 +295,7 @@ pub async fn get_many_compact_posts_for_tag(
     .tag_repository
     .get_many_compact_tags_by_ids(&unique_tag_ids)
     .await;
-  if !compact_tags.is_ok() {
+  if compact_tags.is_err() {
     // @TODO-ZM: log error reason
     return StatusCode::INTERNAL_SERVER_ERROR.into_response();
   }
@@ -305,7 +305,7 @@ pub async fn get_many_compact_posts_for_tag(
     .account_repository
     .get_many_compact_accounts_by_ids(unique_poster_ids.clone())
     .await;
-  if !compact_posters.is_ok() {
+  if compact_posters.is_err() {
     // @TODO-ZM: log error reason
     return StatusCode::INTERNAL_SERVER_ERROR.into_response();
   }
@@ -369,7 +369,7 @@ pub async fn create_one_post_with_poster(
     .get_one_account_by_email(&body.poster.email)
     .await;
 
-  if !existing_poster.is_ok() {
+  if existing_poster.is_err() {
     match existing_poster {
       Err(DataAccessError::NotFound) => {
         let poster_id_result = app_state
@@ -380,7 +380,7 @@ pub async fn create_one_post_with_poster(
           })
           .await;
 
-        if !poster_id_result.is_ok() {
+        if poster_id_result.is_err() {
           // @TODO-ZM: log error reason
           return StatusCode::INTERNAL_SERVER_ERROR.into_response();
         }
@@ -400,7 +400,7 @@ pub async fn create_one_post_with_poster(
     .tag_repository
     .get_many_compact_tags_by_ids(&body.post.tag_ids)
     .await;
-  if !compact_tags.is_ok() {
+  if compact_tags.is_err() {
     // @TODO-ZM: log error reason
     return StatusCode::INTERNAL_SERVER_ERROR.into_response();
   }
@@ -425,7 +425,7 @@ pub async fn create_one_post_with_poster(
     })
     .await;
 
-  if !post_id.is_ok() {
+  if post_id.is_err() {
     // @TODO-ZM: log error reason
     return StatusCode::INTERNAL_SERVER_ERROR.into_response();
   }
@@ -444,7 +444,7 @@ pub async fn create_one_post_with_poster(
   let kv_db_result = app_state
     .main_kv_db
     .insert(post_id.to_be_bytes(), random_16.as_bytes());
-  if !kv_db_result.is_ok() {
+  if kv_db_result.is_err() {
     // @TODO-ZM: log error reason
     return StatusCode::INTERNAL_SERVER_ERROR.into_response();
   }
@@ -476,7 +476,7 @@ https://www.algeriastartupjobs.com
     )
     .await;
 
-  if !email_result.is_ok() {
+  if email_result.is_err() {
     // @TODO-ZM: log error reason
     return StatusCode::INTERNAL_SERVER_ERROR.into_response();
   }
@@ -524,7 +524,7 @@ pub async fn confirm_post(
     None as Option<&[u8]>,
   );
 
-  if !kv_db_result.is_ok() || kv_db_result.unwrap().is_err() {
+  if kv_db_result.is_err() || kv_db_result.unwrap().is_err() {
     // @TODO-ZM: log error reason
     return StatusCode::UNAUTHORIZED.into_response();
   }
@@ -533,7 +533,7 @@ pub async fn confirm_post(
     .post_repository
     .publish_one_post_by_id(body.post_id)
     .await;
-  if !update_result.is_ok() {
+  if update_result.is_err() {
     // @TODO-ZM: log error reason
     return StatusCode::INTERNAL_SERVER_ERROR.into_response();
   }
@@ -542,7 +542,7 @@ pub async fn confirm_post(
     .post_repository
     .get_one_post_by_id(body.post_id)
     .await;
-  if !post.is_ok() {
+  if post.is_err() {
     // @TODO-ZM: log error reason
     return StatusCode::INTERNAL_SERVER_ERROR.into_response();
   }
@@ -559,7 +559,7 @@ pub async fn confirm_post(
       r#type: TaskType::Automated,
     })
     .await;
-  if !task_id.is_ok() {
+  if task_id.is_err() {
     // @TODO-ZM: log error reason
     return StatusCode::INTERNAL_SERVER_ERROR.into_response();
   }
@@ -568,7 +568,7 @@ pub async fn confirm_post(
     .account_repository
     .get_one_account_by_id(post.poster_id)
     .await;
-  if !poster.is_ok() {
+  if poster.is_err() {
     // @TODO-ZM: log error reason
     return StatusCode::INTERNAL_SERVER_ERROR.into_response();
   }
@@ -578,7 +578,7 @@ pub async fn confirm_post(
     .tag_repository
     .get_many_compact_tags_by_ids(&post.tag_ids)
     .await;
-  if !compact_tags.is_ok() {
+  if compact_tags.is_err() {
     // @TODO-ZM: log error reason
     return StatusCode::INTERNAL_SERVER_ERROR.into_response();
   }
@@ -588,7 +588,7 @@ pub async fn confirm_post(
     .auth_service
     .generate_scoped_token(TokenScope::CreatePost, poster.id)
     .await;
-  if !auth_token.is_ok() {
+  if auth_token.is_err() {
     // @TODO-ZM: log error reason
     return StatusCode::INTERNAL_SERVER_ERROR.into_response();
   }
@@ -619,7 +619,7 @@ pub async fn create_one_post(
     .get_one_account_by_id(scoped_token.id)
     .await;
 
-  if !poster.is_ok() {
+  if poster.is_err() {
     // @TODO-ZM: log error reason
     return StatusCode::INTERNAL_SERVER_ERROR.into_response();
   }
@@ -659,7 +659,7 @@ pub async fn create_one_post(
     .tag_repository
     .get_many_compact_tags_by_ids(&body.post.tag_ids)
     .await;
-  if !compact_tags.is_ok() {
+  if compact_tags.is_err() {
     // @TODO-ZM: log error reason
     return StatusCode::INTERNAL_SERVER_ERROR.into_response();
   }
@@ -685,14 +685,14 @@ pub async fn create_one_post(
     })
     .await;
 
-  if !post_id.is_ok() {
+  if post_id.is_err() {
     // @TODO-ZM: log error reason
     return StatusCode::INTERNAL_SERVER_ERROR.into_response();
   }
   let post_id = post_id.unwrap();
 
   let post = app_state.post_repository.get_one_post_by_id(post_id).await;
-  if !post.is_ok() {
+  if post.is_err() {
     // @TODO-ZM: log error reason
     return StatusCode::INTERNAL_SERVER_ERROR.into_response();
   }
@@ -709,7 +709,7 @@ pub async fn create_one_post(
       r#type: TaskType::Automated,
     })
     .await;
-  if !task_id.is_ok() {
+  if task_id.is_err() {
     // @TODO-ZM: log error reason
     return StatusCode::INTERNAL_SERVER_ERROR.into_response();
   }
@@ -718,7 +718,7 @@ pub async fn create_one_post(
     .account_repository
     .get_one_account_by_id(post.poster_id)
     .await;
-  if !poster.is_ok() {
+  if poster.is_err() {
     // @TODO-ZM: log error reason
     return StatusCode::INTERNAL_SERVER_ERROR.into_response();
   }
@@ -739,7 +739,7 @@ pub async fn delete_one_post_by_id(
   Path(id): Path<u32>,
 ) -> impl IntoResponse {
   let post = app_state.post_repository.get_one_post_by_id(id).await;
-  if !post.is_ok() {
+  if post.is_err() {
     match post {
       Err(DataAccessError::NotFound) => {
         return StatusCode::NOT_FOUND.into_response();
@@ -780,7 +780,7 @@ pub async fn delete_one_post_by_id(
   }
 
   let delete_result = app_state.post_repository.delete_one_post_by_id(id).await;
-  if !delete_result.is_ok() {
+  if delete_result.is_err() {
     // @TODO-ZM: log error reason
     return StatusCode::INTERNAL_SERVER_ERROR.into_response();
   }
@@ -797,7 +797,7 @@ pub async fn delete_one_post_by_id(
     })
     .await;
 
-  if !task_id.is_ok() {
+  if task_id.is_err() {
     // @TODO-ZM: log error reason
     return StatusCode::INTERNAL_SERVER_ERROR.into_response();
   }

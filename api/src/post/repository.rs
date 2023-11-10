@@ -62,7 +62,7 @@ impl PostRepository {
     for row in db_result {
       let tag_ids = row.get::<String, _>("tag_ids");
       let tag_ids = tag_ids
-        .split(",")
+        .split(',')
         .filter(|id| !id.is_empty())
         .map(|id| id.parse::<u32>())
         .collect::<Vec<Result<u32, _>>>();
@@ -146,7 +146,7 @@ impl PostRepository {
     for row in db_result {
       let tag_ids = row.get::<String, _>("tag_ids");
       let tag_ids = tag_ids
-        .split(",")
+        .split(',')
         .filter(|id| !id.is_empty())
         .map(|id| id.parse::<u32>())
         .collect::<Vec<Result<u32, _>>>();
@@ -225,7 +225,7 @@ impl PostRepository {
     for row in db_result {
       let tag_ids = row.get::<String, _>("tag_ids");
       let tag_ids = tag_ids
-        .split(",")
+        .split(',')
         .filter(|id| !id.is_empty())
         .map(|id| id.parse::<u32>())
         .collect::<Vec<Result<u32, _>>>();
@@ -303,7 +303,7 @@ impl PostRepository {
 
     let tag_ids = db_result.get::<String, _>("tag_ids");
     let tag_ids = tag_ids
-      .split(",")
+      .split(',')
       .filter(|id| !id.is_empty())
       .map(|id| id.parse::<u32>())
       .collect::<Vec<Result<u32, _>>>();
@@ -358,7 +358,7 @@ impl PostRepository {
     )
     .bind(&post.slug)
     .bind(&post.title)
-    .bind(&post.poster_id)
+    .bind(post.poster_id)
     .bind(&post.short_description)
     .bind(&post.description)
     .bind(&post.tag_ids.iter().map(|id| id.to_string()).collect::<Vec<String>>().join(","))

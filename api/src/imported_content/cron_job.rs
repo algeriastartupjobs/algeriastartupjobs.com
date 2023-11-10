@@ -107,16 +107,16 @@ impl ImportedContentCronJob {
       let app_state = app_state.clone();
       let is_job_running = is_job_running.clone();
 
-      return Box::pin(async move {
+      Box::pin(async move {
         let compare_and_swap_result =
           is_job_running.compare_exchange(false, true, Ordering::Relaxed, Ordering::Relaxed);
-        if compare_and_swap_result.is_ok() && compare_and_swap_result.unwrap() == false {
+        if compare_and_swap_result.is_ok() && !compare_and_swap_result.unwrap() {
           run_importing_content_cron_job(app_state.clone()).await;
           is_job_running.store(false, Ordering::Relaxed);
         } else {
           tracing::info!("⏳ Still importing_content... ");
         }
-      });
+      })
     });
 
     if job.is_err() {
